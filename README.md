@@ -42,12 +42,12 @@ install it.
 #>   the ref as"develop".
 #> - if you want to build the vignettes for reference, you can set 
 #>   build_vignettes as TRUE.
-devtools::install_github("JunLiuLab/SIMPLEs", ref="master", build_vignettes=FALSE)
+devtools::install_github("JunLiuLab/SIMPLEs", ref="master", build_vignettes=TRUE)
 ```
 ## Vignettes
 You can view the vignettes in the package as reference.
 ```r
-vignettes(topic="SIMPLEs_example", package="SIMPLEs")
+vignette(topic="SIMPLEs_example", package="SIMPLEs")
 ```
 
 ## Data
