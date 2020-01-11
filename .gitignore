@@ -1,0 +1,9 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+packrat/lib*/
+.DS_Store
+*.Rproj
+doc
+Meta
