@@ -11,7 +11,7 @@ Description: SIMPLE is a R package that imputes "dropout" values (i.e. zero or s
    co-expression network.  
 License: MIT
 Encoding: UTF-8
-Depends: R (>= 3.3.2)
+Depends: R (>= 3.5.0)
 Imports: 
     MASS (>= 7.3-51.4),
     glmnet (>= 2.0-16),
