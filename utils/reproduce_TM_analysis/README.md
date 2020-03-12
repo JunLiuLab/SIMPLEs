@@ -54,3 +54,8 @@ get the Figure 8(b), Figure S11 and Figure S12.
   in the same script to get Figure 8(a).
 
 ## 5. Boxplot and dotplot for gene module analysis given M as 1 and K as 10.
+* We use function `draw_simple_boxplot` in the script `analyze_imputation.R` to
+  get the Figure 9(a) and Figure S13.
+
+* Start from Line 387 till the end in the same script, we draw the dotplot for
+  Figure 9(b). 

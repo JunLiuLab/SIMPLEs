@@ -12,8 +12,8 @@ library(randomcoloR)
 library(ggpubr)
 library(gridGraphics)
 library(gridExtra)
-
-library(foreach)
+library(Seurat)
+library(cowplot)
 
 tsneplot <- function(tsne_res, types, title="TSNE", palette=NULL,file=NULL, ...) {
   dat <- data.frame(cbind(tsne_res), types)
@@ -170,7 +170,7 @@ handle_simple_draw_tsne <- function() {
 meta_data <- readRDS(here("leukocytes_meta_data.rds"))
 meta_data$tissuecell <- paste(meta_data$tissue, meta_data$cell_ontology_class)
 palettes <- readRDS(here("raw_palettes.rds"))
-
+######################## generate Figure 9(a), and Figure S13.
 draw_simple_boxplot <- function(K0=10, M0=12, pm=0.4, cutoff=0.1,
                                 palettes=palettes, onwhat="cell",
                                 oncondition=NULL, condname ="allcell",
@@ -198,7 +198,6 @@ draw_simple_boxplot <- function(K0=10, M0=12, pm=0.4, cutoff=0.1,
       print(dim(Ef))
     }
   }
-
   ## sort by the median of tissue.
   pltList <- lapply(1:K0, function(k) {
     p <- ggplot(Ef, aes_string(
@@ -227,11 +226,11 @@ draw_simple_boxplot <- function(K0=10, M0=12, pm=0.4, cutoff=0.1,
   if (!is.null(oncondition)) {
     prefix <- paste0(prefix, "_", condname)
   }
-  boxplot_save_fnm <- here("TabulaMuris","analyze", "module",
-                          paste0(prefix, "_",onwhat, "_boxplot.pdf"))
+  boxplot_save_fnm <- here(paste0(prefix, "_",onwhat, "_boxplot.pdf"))
   ggexport(plotlist = pltList, filename = boxplot_save_fnm,
           nrow = 10, ncol = 1, width = width, height=height)
 }
+
 
 ## ** modify seurat package functions and do dotplots.
 PercentAbove <- function(x, threshold) {
@@ -383,3 +382,99 @@ MyPubDotPlot <- function(object, features,
           )
   return(p)
 }
+
+
+################## generate Figure 9(b)
+normalized_data <- readRDS(here("TabulaMuris","data","leukocytes_normalized_data.rds"))
+meta_data <- readRDS(here("TabulaMuris","data","leukocytes_meta_data.rds"))
+meta_data$tissuecell <- paste(meta_data$tissue, meta_data$cell_ontology_class)
+
+TcellFamily <- c("T cell", "immature T cell","regulatory T cell",
+                 "immature NK T cell")
+BcellFamily <- c("immature B cell", "B cell", "naive B cell",
+                 "precursor B cell","late pro-B cell")
+
+## * stats cells in tissue
+tcell_index <- is.element(meta_data$cell_ontology_class, TcellFamily)
+tcells <- meta_data$cell_ontology_class[tcell_index]
+tcell_tissues <- meta_data$tissue[tcell_index]
+table(tcells, tcell_tissues)
+
+## * choose the specific parameters
+M0 <- 1
+K0 <- 10
+pm <- 0.4
+cutoff <- 0.1
+
+## * load simple result
+simple_res <- load_simple_res(K0, M0, pm, cutoff)
+B <- simple_res$beta
+colnames(B) <- paste("Factor", c(1:K0), sep = ".", collapse = NULL)
+rownames(B) <- rownames(normalized_data)
+
+## * construct seurat object
+raw_seurat <- CreateSeuratObject(
+  counts = normalized_data[,tcell_index],
+  project = "RAW",assay = "imputation")
+raw_seurat <- AddMetaData(object = raw_seurat, metadata = tcell_tissues,
+                             col.name = "tissue")
+raw_seurat <- AddMetaData(object = raw_seurat,
+                             metadata = tcells,
+                          col.name = "cell")
+
+simple_seurat <- CreateSeuratObject(
+  counts = simple_res$impt[,tcell_index],
+  project = "SIMPLE",assay = "imputation")
+simple_seurat <- AddMetaData(object = simple_seurat, metadata = tcell_tissues,
+                             col.name = "tissue")
+simple_seurat <- AddMetaData(object = simple_seurat,
+                             metadata = tcells,
+                             col.name = "cell")
+
+get_top_genes <- function(factor = 9, ph = 10) {
+  factornm <- paste("Factor", factor, sep=".")
+  gene_module <- B[, colnames(B) == factornm]
+  Bbi <- order(gene_module, decreasing = T)
+  Bb <- gene_module[Bbi]
+  top_high_genes <- names(Bb)[1:ph]
+  return(top_high_genes)
+}
+
+################## generate Figure 9(b)
+f3_top_genes <- get_top_genes(factor=3)
+f9_top_genes <- get_top_genes(factor=9)
+
+scale.min <- 15
+scale.max <- 100
+col.max <- 10
+
+
+orig_p_f3 <- MyPubDotPlot(object=raw_seurat, features=f3_top_genes,
+                       group.by = "tissue", cols = c("lightgrey", "blue"),
+                       col.max = col.max, col.min = 0,
+                       scale.min = scale.min,scale.max = scale.max)
+simp_p_f3 <- MyPubDotPlot(object = simple_seurat, features = f3_top_genes,
+                    group.by = "tissue",cols = c("lightgrey","blue"),
+                    col.max = col.max, col.min = 0,
+                    scale.min = scale.min,scale.max = scale.max)
+
+orig_p_f9 <- MyPubDotPlot(object=raw_seurat, features=f9_top_genes,
+                          group.by = "tissue", cols = c("lightgrey", "blue"),
+                          col.max = col.max, col.min = 0,
+                          scale.min = scale.min,scale.max = scale.max)
+
+simp_p_f9 <- MyPubDotPlot(object = simple_seurat, features = f9_top_genes,
+                          group.by = "tissue",cols = c("lightgrey","blue"),
+                          col.max = col.max, col.min = 0,
+                          scale.min = scale.min,scale.max = scale.max)
+
+os_p <- ggarrange(orig_p_f3, simp_p_f3, orig_p_f9, simp_p_f9,
+                  nrow=2, ncol=2, legend = "right", 
+                  common.legend = TRUE)
+os_p
+## os_p <- ggarrange(orig_p, simp_p, nrow=1, ncol=2, legend = "none", widths = c(1, 1))
+f_figure_nm <- paste0("f-", f, "_dotplot.pdf")
+pdf(file = here(f_figure_nm),
+    width = 8,height = 4)
+print(os_p)
+dev.off()
