@@ -440,7 +440,6 @@ get_top_genes <- function(factor = 9, ph = 10) {
   return(top_high_genes)
 }
 
-################## generate Figure 9(b)
 f3_top_genes <- get_top_genes(factor=3)
 f9_top_genes <- get_top_genes(factor=9)
 
