@@ -23,3 +23,9 @@ install.packages("ontologyIndex")
 install.packages("ggplot2")
 install.packages("doParallel")
 install.packages("optparse")
+
+# for drawing images
+devtools::install_github("kassambara/ggpubr")
+install.packages("gridExtra")
+install.packages("gridGraphics")
+install.packages("cowplot")

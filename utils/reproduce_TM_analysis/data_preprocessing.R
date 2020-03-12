@@ -75,15 +75,19 @@ get_normalized_data <- function(raw_data_filter_cell, meta_data_filter_cell, ids
     count_data  <- exp(as.matrix(final_data_matrix)) - 1.0
     count_data[count_data == 0] <- 0.0
 
-    list(normalizded_data = final_data_matrix, meta_data = tcell_meta, count_data = count_data)
+    list(normalizded_data = final_data_matrix, meta_data = tcell_meta,
+         count_data = count_data)
 }
 
 ## * All the immune cells
 leukocyte_id <- "CL:0000738"
 cell_ontologies <- get_ontology(file = "cell_ontology.obo", extract_tags = "everything")
-leukocytes <- get_descendants(ontology=cell_ontologies, roots = leukocyte_id, exclude_roots = FALSE)
+leukocytes <- get_descendants(ontology=cell_ontologies, roots = leukocyte_id,
+                              exclude_roots = FALSE)
 normalized_data <- get_normalized_data(facs_raw_data, facs_meta_data,
-                                      leukocytes, low_percent_count = 0.05,high_percent_count = 1,least_std = 1.2)
-saveRDS(object=as.matrix(normalized_data$normalizded_data), file="leukocytes_normalized_data.rds")
-saveRDS(object = normalized_data$meta_data, file="leukocytes_meta_data.rds")
-saveRDS(object = normalized_data$count_data, file="leukocytes_count_data.rds")
+                                       leukocytes, low_percent_count = 0.05,
+                                       high_percent_count = 1,least_std = 1.2)
+saveRDS(object=as.matrix(normalized_data$normalizded_data),
+        file="leukocytes_normalized_data.rds")
+saveRDS(object = normalized_data$meta_data, file = "leukocytes_meta_data.rds")
+saveRDS(object = normalized_data$count_data, file = "leukocytes_count_data.rds")

@@ -1,6 +1,6 @@
 # Reproduction of the analysis on the Tabula Muris database.
 
-Authors: Songpeng Zu
+Author: Songpeng Zu
 
 ## 1. Prepare the packages and dataset.
 * Run the script *prepare_packages.R* to install the R packages needed in this
@@ -28,4 +28,29 @@ transcript analysis data.
 ## 2. Data preprocessing
 * Run the script *data_preprocessing.R* to do data processing including
   normalization, select leukocyte cells, and so on. This script will generate
-  the data named *leukocytes_normalizded_data.rds*
+  three data named *leukocytes_normalizded_data.rds*,
+  *leukocytes_meta_data.rds*, *leukocytes_count_data.rds*.
+
+## 3. Do imputation
+Use SIMPLEs to impute the leukocytes single cell data above. The meanings of
+different parameters can be found by using `?SIMPLE` after loading our packages.
+`library(SIMPLEs)`.
+```
+Rscript --vanilla do_imputation.R -k 10 --M0 1 -p 0.3 -c 0.1 --cores 8 
+```
+This process might take several hours. In our case, it needs about 6-8 hours on
+a 8-core single node. This will generate the file named
+*SIMPLE_K0-10_M0-1_pm-0.3_cufoff-0.1_maxlambda_result.rds*. The file name will
+be changed according to different parameters.
+
+In our paper, Figure 8 shows the results of 20 different combinations of K (5,
+10, 15, 20) and M (1,2,8,12,22). Note that pm is fixed as 0.4.
+
+## 4. TSNE results for different parameters of SIMPLEs. 
+* We use the function `handle_raw_data` in the script `analyze_imputation.R` to
+get the Figure 8(b), Figure S11 and Figure S12.
+
+* Then we use the function `handle_simple_tsne` and `handle_simple_draw_tsne`
+  in the same script to get Figure 8(a).
+
+## 5. Boxplot and dotplot for gene module analysis given M as 1 and K as 10.
