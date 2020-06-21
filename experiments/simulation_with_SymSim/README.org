@@ -18,4 +18,4 @@
 - eval_simulation_singlejob.R describe how to run different imputation methods.
 
 ** Result Summary
-- result_summary.R is used to generate Supplementary Text: Figure S15.
+- result_summary.R is used to generate Supplementary Text: Figure S15-16.

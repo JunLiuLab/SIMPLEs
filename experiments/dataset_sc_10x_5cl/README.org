@@ -17,4 +17,4 @@
   expressed gene analysis.
 
 ** Data Summary
-- result_summary.R is used to generate Supplementary Text: Figure S16.
+- result_summary.R is used to generate Supplementary Text: Figure S17-18.
