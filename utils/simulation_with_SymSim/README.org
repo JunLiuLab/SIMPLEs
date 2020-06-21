@@ -1,0 +1,16 @@
+* Simulation
+
+** tool: SymSim
+** generate data:
+*** need to consider:
+    - experiment platform:
+      - UMI (SIMPLEs is not designed for this type actually)
+      - reads
+    - compare on:
+      - differential expression gene
+      - clustering
+    - data request:
+      - model cell clusters
+      - model differential expression genes
+    - suggests
+      - use the optimized or default parameters from simulation tools
