@@ -3,7 +3,7 @@ library(devtools)
 devtools::install_github("klutometis/roxygen")
 library(roxygen2)
 
-devtools::install_github("beyondpie/SymSim", ref = "szu", force = T)
+devtools::install_github("YosefLab/SymSim")
 
 devtools::install_github("JunLiuLab/SIMPLEs",
   ref = "master",
@@ -22,17 +22,6 @@ devtools::install_github("ChenMengjie/VIPER")
 
 ## NOTE: pip install --user magic-impute <---- is needed.
 install.packages("Rmagic")
-
-
-library(SIMPLEs)
-library(scImpute)
-library(Rmagic)
-library(SAVER)
-library(SCRABBLE)
-library(VIPER)
-
-install.packages("Seurat")
-library(Seurat)
 
 # For directory handle
 install.packages("here")

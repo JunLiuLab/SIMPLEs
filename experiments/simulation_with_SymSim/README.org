@@ -1,16 +1,21 @@
-* Simulation
+* Simulation with SymSim
+** Required  packages
+- prepare_packages.R is used to install the packages needed, which could be used
+  as a reference. 
 
-** tool: SymSim
-** generate data:
-*** need to consider:
-    - experiment platform:
-      - UMI (SIMPLEs is not designed for this type actually)
-      - reads
-    - compare on:
-      - differential expression gene
-      - clustering
-    - data request:
-      - model cell clusters
-      - model differential expression genes
-    - suggests
-      - use the optimized or default parameters from simulation tools
+** How to Run
+- Our jobs are organized and executed by *make* under the *jobs* directory.
+- Our jobs are submitted into the *slurm* to run. But you can get it run locally
+  by following the shell scripts under *jobs*. 
+*** Data generation
+- setup_simdata.R is used to generate the simulation data by SymSim for this
+  experiments.
+*** Run scVI
+- In *scVI*, the files are used to describe how to convert generated data for
+  scVI, and how to run scVI. Again, we use *make* under the $jobs$ sub-directory
+  under *scVI*.
+*** Run SIMPLEs and other methods.
+- eval_simulation_singlejob.R describe how to run different imputation methods.
+
+** Result Summary
+- result_summary.R is used to generate Supplementary Text: Figure S15.
