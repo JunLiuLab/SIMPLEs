@@ -292,6 +292,8 @@ main_impute <- function() {
   ))
 }
 
+## This is used under the situation you have done the imputation, such
+## as after running scVI.
 de_after_impute <- function() {
   ## ** parameters
   method <- args$method
@@ -321,5 +323,4 @@ de_after_impute <- function() {
 
 ## * script main interface
 registerDoParallel(cores = args$ncores)
-# after impute, main_impute()
-de_after_impute()
+main_impute()
