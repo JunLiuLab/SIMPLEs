@@ -1,0 +1,20 @@
+* Time complexity 
+
+** Data sources
+We use the dataset as the same as in the mouse immune cells experiment (See
+expriments/reproduce_TM_anlaysis/data_preprocessing.R for details). 
+- dataset_for_timer.R
+We partition the cells into several groups.
+
+** How to run
+*** Jobs under make
+- Our jobs are organized and executed by *make* under the *jobs* directory.
+- Our jobs are submitted into the *slurm* to run. But you can get it run locally
+  by following the shell scripts under *jobs*. 
+*** SIMPLEs
+- simple_timer.R is used to get the time cost for SIMPLEs.
+- others_timer.R is used to get the time cost for other methods.
+
+** Result Summary
+- simple_timer_summary.R is used to generate Supplementary Text: Figure S14.
+- timer_compare_summary.R is used to generate Supplementary Text: Figure S19.
