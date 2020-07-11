@@ -116,7 +116,7 @@ EM_impute <- function(Y, Y0, pg, M0, K0, cutoff, iter, beta, sigma, lambda, pi, 
     fn <- function(x, Em, nz) {
         sum(Em/x + log(x) * (nz - 2))  # -2(alpha-1)
     }
-    
+    priorB = 0 
     for (it in 1:iter) {
         # E step get expectation of Z
         for (m in 1:M0) {
@@ -142,6 +142,8 @@ EM_impute <- function(Y, Y0, pg, M0, K0, cutoff, iter, beta, sigma, lambda, pi, 
         
         # compute total loglik
         tot[it] <- sum(log(rowSums(lik)) + sconst)
+        # add prior of B
+        tot[it] <- tot[it] - priorB
         
         if (it >= est_z | is.null(z)) {
             z <- lik/rowSums(lik)  # n * M0
@@ -253,7 +255,7 @@ EM_impute <- function(Y, Y0, pg, M0, K0, cutoff, iter, beta, sigma, lambda, pi, 
             
             penalty <- penl  # sigma^2
             fit1m <- glmnet(W_aug, Y_aug, family = "gaussian", alpha = 1, intercept = F, 
-                standardize = F, nlambda = 1, lambda = mean(penalty)/(M0 * n + K0)/var(Y_aug), 
+                standardize = F, nlambda = 1, lambda = mean(penalty)/(M0 * n + K0)*var(Y_aug), 
                 penalty.factor = rep(1, K0))  # K dimensional, n+K data
             
             nb <- fit1m$beta[, 1]
@@ -262,13 +264,15 @@ EM_impute <- function(Y, Y0, pg, M0, K0, cutoff, iter, beta, sigma, lambda, pi, 
                 (sum((Y[g, ] - mu[g, m] - nb %*% t(Wm[[m]]))^2 * z[, m]) + sum((nb %*% 
                   Vm[[m]]) * nb))
             })
-            c(nb, rep((sum(sg) + 1)/(n + 3), M0))
+            sg = (sum(sg) + 1)/(n + 3)
+            priorB = penl * var(Y_aug)/sg * sum(abs(nb))
+            c(nb, rep(sg, M0), priorB)
         }
-        
         beta <- matrix(res[, 1:K0], ncol = K0)
-        sigma <- matrix(res[, -1:-K0], ncol = M0)
+        sigma <- matrix(res[, (K0+1):(K0+M0)], ncol = M0)
         sigma[sigma > 9] <- 9
         sigma[sigma < 1e-04] <- 1e-04
+        priorB = sum(res[, ncol(res)])
         
         # max lambda
         if (max_lambda & it >= est_lam) {
@@ -331,5 +335,5 @@ EM_impute <- function(Y, Y0, pg, M0, K0, cutoff, iter, beta, sigma, lambda, pi, 
     Y <- Y * gene_sd + gene_mean
     
     return(list(loglik = tot, pi = pi, mu = mu, sigma = sigma, beta = beta, lambda = lambda, 
-        z = z, Ef = Wm, Varf = M, Y = Y, geneM = gene_mean, geneSd = gene_sd))
+        z = z, Ef = Wm, Varf = M, Y = Y, geneM = gene_mean, geneSd = gene_sd, priorB = priorB))
 }

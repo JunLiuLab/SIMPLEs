@@ -155,6 +155,6 @@ do_impute <- function(dat, Y, beta, lambda, sigma, mu, pi, pos_mean = NULL, pos_
     
     varF <- record_F2/mcmc - (record_EF/mcmc)^2 + record_varF[, seq(1, K0^2, by = (K0 + 
         1))]/mcmc
-    return(list(loglik = tot, impt = (record_impt/mcmc) * pos_sd + pos_mean, impt_var = record_impt2/mcmc - 
+    return(list(loglik = mean(tot[-1:-burnin]), impt = (record_impt/mcmc) * pos_sd + pos_mean, impt_var = record_impt2/mcmc - 
         (record_impt/mcmc)^2, EF = record_EF/mcmc, varF = varF, consensus_cluster = consensus_cluster/mcmc))
 }
