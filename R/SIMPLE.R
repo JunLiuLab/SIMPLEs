@@ -184,6 +184,7 @@ init_impute <- function(Y2, M0, clus, p_min = 0.6, cutoff = 0.1, verbose = F) {
 #' }
 #' @import doParallel
 #' @importFrom foreach foreach
+#' @importFrom irlba irlba
 #' @seealso \code{\link{SIMPLE_B}}
 #' @examples
 #' library(foreach)

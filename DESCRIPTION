@@ -20,7 +20,8 @@ Imports:
     Rsolnp (>= 1.16),
     msm (>= 1.6.7),
     doParallel (>= 1.0.15),
-    foreach (>= 1.4.7)
+    foreach (>= 1.4.7),
+    irlba (>= 2.3.3)
 RoxygenNote: 7.0.2
 Suggests:
     knitr,
