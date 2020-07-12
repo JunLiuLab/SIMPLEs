@@ -59,3 +59,11 @@ the details of the data, and run the analyses using SIMPLEs.
 ?SIMPLEs::chu
 ```
 
+## Reference
+SIMPLEs: a single-cell RNA sequencing imputation strategy preserving gene modules and cell clusters variation
+
+Zhirui Hu, Songpeng Zu et al., 2020 
+(https://www.biorxiv.org/content/10.1101/2020.01.13.904649v1?rss=1)
+
+## Reproducible codes
+The codes related with the reference above: https://github.com/JunLiuLab/SIMPLEs2020
