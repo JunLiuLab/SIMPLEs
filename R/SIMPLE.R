@@ -262,9 +262,11 @@ SIMPLE <- function(dat, K0 = 10, M0 = 1, iter = 10, est_lam = 1, impt_it = 5, pe
   # init clustering
   if (is.null(clus)) {
     Y2_scale <- t(scale(t(dat[hq_ind, ])))
-    s <- svd(Y2_scale)
+    #s <- svd(Y2_scale)
+    s <- irlba(Y2_scale, nv = K)
     # for high dropout rate
-    km0 <- kmeans(t(Y2_scale) %*% s$u[, 1:K], M0, iter.max = 80, nstart = 300)
+    cellmat = s$v %*% diag(s$d)
+    km0 <- kmeans(cellmat, M0, iter.max = 80, nstart = 300)
     clus <- km0$cluster
   }
 

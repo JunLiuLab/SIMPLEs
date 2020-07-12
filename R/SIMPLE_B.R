@@ -284,9 +284,11 @@ SIMPLE_B <- function(dat, K0, bulk, celltype, M0 = 1, clus = NULL, K = 20,
     if (is.null(clus)) {
         
         Y2_scale <- t(scale(t(res)))
-        s <- svd(Y2_scale)
+        #s <- svd(Y2_scale)
+        s <- irlba(Y2_scale, nv = K)
         # if (clus_opt == 1) {
-        km0 <- kmeans(t(Y2_scale) %*% s$u[, 1:K], M0, iter.max = 80, nstart = 300)
+        cellmat = s$v %*% diag(s$d) #t(Y2_scale) %*% s$u[, 1:K]
+        km0 <- kmeans(cellmat, M0, iter.max = 80, nstart = 300)
         # } else { km0 <- kmeans(s$v[, 1:K], M0, iter.max = 80, nstart = 300) }
         clus <- km0$cluster
         
