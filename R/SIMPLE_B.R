@@ -423,19 +423,21 @@ SIMPLE_B <- function(dat, K0, bulk, celltype, M0 = 1, clus = NULL, K = 20,
     }
     
     impute <- t(impute) * impute_result$geneSd + impute_result$geneM
-    
+    loglik_tot = impute_result$loglik[length(impute_result$loglik)]
+    # mu, shared sigma and B, lambda
+    bic = -2*loglik_tot + log(n) *(G * M0 +  G *(K0+1) + K0*(M0-1))
     if (mcmc > 0) {
         message("multiple impution sampling")
         result2 = do_impute(dat, impute_result$Y, impute_result$beta, impute_result$lambda, 
             impute_result$sigma, impute_result$mu, impute_result$pi, impute_result$geneM, 
             impute_result$geneSd,celltype, mcmc = mcmc, burnin = burnin, pg = pg, cutoff = cutoff)
 
-        return(list(loglik = impute_result$loglik, pi = impute_result$pi, mu = impute_result$mu, 
+        return(list(loglik = impute_result$loglik, priorB = impute_result$priorB, loglik = result2$loglik, BIC = bic, pi = impute_result$pi, mu = impute_result$mu,
             sigma = impute_result$sigma, beta = impute_result$beta, lambda = impute_result$lambda, 
             z = impute_result$z, Yimp0 = impute, pg = pg, impt = result2$impt, impt_var = result2$impt_var, 
             Ef = result2$EF, Varf = result2$varF, consensus_cluster = result2$consensus_cluster))
     } else {
-        return(list(loglik = impute_result$loglik, pi = impute_result$pi, mu = impute_result$mu, 
+        return(list(loglik = impute_result$loglik, priorB = impute_result$priorB, loglik = NULL, BIC = bic, pi = impute_result$pi, mu = impute_result$mu,
             sigma = impute_result$sigma, beta = impute_result$beta, lambda = impute_result$lambda, 
             z = impute_result$z, Yimp0 = impute, pg = pg, impt = impute_result$Y, 
             impt_var = NULL, Ef = impute_result$Ef, 

@@ -155,6 +155,8 @@ init_impute <- function(Y2, M0, clus, p_min = 0.6, cutoff = 0.1, verbose = F) {
 #' @return \code{SIMPLE} returns a list of results in the following order.
 #'   \enumerate{
 #'     \item{loglik} {The log-likelihood of the full imputed gene expression at each iteration.}
+#'     \item{loglik_tot} {The log-likelihood of the full imputed gene expression at each iteration and the prior of B matrix.}
+#'     \item{}
 #'     \item{pi} {The prior probabilites of cells belong to each cluster.}
 #'     \item{mu} {Mean expression for each gene in each cluster}
 #'     \item{sigma} {Variances of idiosyncratic noises for each gene in each cluster.}
@@ -418,6 +420,9 @@ SIMPLE <- function(dat, K0 = 10, M0 = 1, iter = 10, est_lam = 1, impt_it = 5, pe
       impute_result$z[, m]
   }
   impute <- t(impute) * impute_result$geneSd + impute_result$geneM
+  loglik_tot = impute_result$loglik[length(impute_result$loglik)]
+  # pg & mu, shared sigma and B, lambda
+  bic = -2*loglik_tot + log(n) *(2*G * M0 +  G *(K0+1) + K0*(M0-1))
   if (mcmc > 0) {
     message("multiple impution sampling")
     result2 <- do_impute(dat, impute_result$Y, impute_result$beta, impute_result$lambda,
@@ -428,14 +433,14 @@ SIMPLE <- function(dat, K0 = 10, M0 = 1, iter = 10, est_lam = 1, impt_it = 5, pe
     )
 
     return(list(
-      loglik_tot = impute_result$loglik, priorB = impute_result$priorB, loglik = result2$loglik, pi = impute_result$pi, mu = impute_result$mu,
+      loglik_tot = impute_result$loglik, priorB = impute_result$priorB, loglik = result2$loglik, BIC = bic, pi = impute_result$pi, mu = impute_result$mu,
       sigma = impute_result$sigma, beta = impute_result$beta, lambda = impute_result$lambda,
       z = impute_result$z, Yimp0 = impute, pg = pg, initclus = clus, impt = result2$impt,
       impt_var = result2$impt_var, Ef = result2$EF, Varf = result2$varF, consensus_cluster = result2$consensus_cluster
     ))
   }
   return(list(
-    loglik_tot = impute_result$loglik, priorB = impute_result$priorB, loglik = NULL, pi = impute_result$pi, mu = impute_result$mu,
+    loglik_tot = impute_result$loglik, priorB = impute_result$priorB, loglik = NULL, BIC = bic,  pi = impute_result$pi, mu = impute_result$mu,
     sigma = impute_result$sigma, beta = impute_result$beta, lambda = impute_result$lambda,
     z = impute_result$z, Yimp0 = impute, pg = pg, initclus = clus, impt = impute_result$Y,
     impt_var = NULL, Ef = impute_result$Ef,
