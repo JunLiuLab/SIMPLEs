@@ -156,7 +156,7 @@ init_impute <- function(Y2, M0, clus, p_min = 0.6, cutoff = 0.1, verbose = F) {
 #'   \enumerate{
 #'     \item{loglik} {The log-likelihood of the full imputed gene expression at each iteration.}
 #'     \item{loglik_tot} {The log-likelihood of the full imputed gene expression at each iteration and the prior of B matrix.}
-#'     \item{}
+#'     \item{BIC} {BIC which is -2 *loglik_tot + penalty on the number of parameters. Can be used to select paramters.}
 #'     \item{pi} {The prior probabilites of cells belong to each cluster.}
 #'     \item{mu} {Mean expression for each gene in each cluster}
 #'     \item{sigma} {Variances of idiosyncratic noises for each gene in each cluster.}
