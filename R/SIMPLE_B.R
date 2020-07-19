@@ -226,7 +226,7 @@ init_impute_bulk <- function(Y2, clus, bulk, pg1, cutoff = 0.1, verbose = F) {
 #' @author Songpeng Zu, \email{songpengzu@g.harvard.edu}
 #' @export
 
-SIMPLE_B <- function(dat, K0, bulk, celltype, M0 = 1, clus = NULL, K = 20, b = NULL,
+SIMPLE_B <- function(dat, K0, bulk, celltype, M0 = 1, clus = NULL, K = 20, b = 1,
     iter = 10, est_z = 1, impt_it = 3, max_lambda = F, est_lam = 1, penl = 1, sigma0 = 100, 
     pi_alpha = 1, beta = NULL, lambda = NULL, sigma = NULL, mu = NULL, p_min = 0.8, 
     min_gene = 300, cutoff = 0.1, verbose = F, num_mc = 3, fix_num = F, mcmc = 50, 
