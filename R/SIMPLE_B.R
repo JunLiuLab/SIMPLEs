@@ -276,6 +276,7 @@ SIMPLE_B <- function(dat, K0, bulk, celltype, M0 = 1, clus = NULL, K = 20, b = 1
                      bulk[hq_ind,i]^2))
            b1 = c(0, b1)
         }
+        message(sprintf("scale between single cell and bulk for cell type %d is %.2f",i, b1[2]))
         pg[, i] <- (rowMeans(dat[, celltype == i]) + p_min)/(1 + b1[1] + b1[2] * bulk[, 
             i])
     }
