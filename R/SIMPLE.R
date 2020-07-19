@@ -422,7 +422,8 @@ SIMPLE <- function(dat, K0 = 10, M0 = 1, iter = 10, est_lam = 1, impt_it = 5, pe
   impute <- t(impute) * impute_result$geneSd + impute_result$geneM
   loglik_tot = impute_result$loglik[length(impute_result$loglik)]
   # pg & mu, shared sigma and B, lambda
-  bic = -2*loglik_tot + log(n) *(2*G * M0 +  G *(K0+1) + K0*(M0-1))
+  bic0 = -2*loglik_tot + log(n) *(2*G * M0 +  G *(K0+1) + K0*(M0-1))
+  bic = -2*loglik_tot + log(n) *(2 * G * M0 + G) + log(n*G) * K0*(M0-1) + K0 * log((G*n)/(G+n)) * (G + n)
   if (mcmc > 0) {
     message("multiple impution sampling")
     result2 <- do_impute(dat, impute_result$Y, impute_result$beta, impute_result$lambda,
