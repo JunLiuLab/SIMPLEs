@@ -111,7 +111,7 @@
 #' # parallel
 #' registerDoParallel(cores = 6)
 #' # estimate the parameters and sample imputed values
-#' results <- selectKM(Y2, K, M, clus = NULL, K = 20, p_min = 0.5, max_lambda = T, min_gene = 200, cutoff = 0.01)
+#' results <- selectKM(Y2, K0=K, M0=M, clus = NULL, K = 20, p_min = 0.5, max_lambda = T, min_gene = 200, cutoff = 0.01)
 #' print(sprintf("best M and K: %d, %d", results$mM, results$mK))
 #' result = results$result
 #' # evaluate cluster performance
