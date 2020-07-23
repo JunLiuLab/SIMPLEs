@@ -4,7 +4,8 @@
 \name{chu}
 \alias{chu}
 \title{Single cell RNASeq and bulk RNASeq data of human embryonic stem cell differentiation.}
-\format{a list includes the following fields
+\format{
+a list includes the following fields
 \describe{
   \item{chu_normalized_data}{single cell RNASeq data, i.e., 
   3000 * 763 matrix with each row as gene and each column as cell.
@@ -12,7 +13,8 @@
   \item{chu_bulk_mean}{the average expression of the 3000 genes in the bulk RNASeq data} 
   \item{differential_genes}{3000 * 7 binary matrix. Each row is a gene, and each column is a unique cell type.}
   \item{chu_cell_type}{a character array with the length of 763.}
- }}
+ }
+}
 \source{
 \href{https://hemberg-lab.github.io/scRNA.seq.datasets/}{scRNA-Seq Datasets}
 }

@@ -4,8 +4,15 @@
 \alias{ztruncnorm}
 \title{Fit a zero-inflated censored normal distribution.}
 \usage{
-ztruncnorm(dat, cutoff = 0.1, iter = 200, s_upper = 4,
-  s_lower = 0.1, p_min = 0.6, p_max = 1)
+ztruncnorm(
+  dat,
+  cutoff = 0.1,
+  iter = 200,
+  s_upper = 4,
+  s_lower = 0.1,
+  p_min = 0.6,
+  p_max = 1
+)
 }
 \arguments{
 \item{dat}{Data matrix.}

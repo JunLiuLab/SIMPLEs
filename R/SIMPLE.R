@@ -138,8 +138,9 @@ init_impute <- function(Y2, M0, clus, p_min = 0.6, cutoff = 0.1, verbose = F) {
 #' @param p_min Initialize parameters using genes expressed in at least
 #'   \emph{p_min} proportion of cells. If the number genes selected is less than
 #'   \emph{min_gene}, select \emph{min_gene} genes with higest proportion of non
-#'   zeros. Default = 0.4.
-#' @param min_gene Minimal number of genes used in the initial phase. See
+#'   zeros. Default = 0.4. If p_min is NULL, SIMPLE will estimate the dropout rate per gene 
+#'   and set 1-p_min to be the min(75% quantile of the dropout rate, 0.6) 
+#' @param min_gene Minimal number of genes used in the initial phase. Default: 2000. See
 #'   details.
 #' @param fix_num If true, always use \emph{min_gene} number of genes with the
 #'  highest proportion of non zeros in the initial phase. Default = F. See details.
@@ -207,7 +208,6 @@ init_impute <- function(Y2, M0, clus, p_min = 0.6, cutoff = 0.1, verbose = F) {
 #' registerDoParallel(cores = 6)
 #' # estimate the parameters and sample imputed values
 #' result <- SIMPLE(Y2, K0, M0, clus = NULL, K = 20, p_min = 0.5, max_lambda = T, min_gene = 200, cutoff = 0.01)
-#' # sample imputed values
 #' # evaluate cluster performance
 #' celltype_true <- simu_data$Z
 #' mclust::adjustedRandIndex(apply(result$z, 1, which.max), celltype_true)
@@ -217,17 +217,16 @@ init_impute <- function(Y2, M0, clus, p_min = 0.6, cutoff = 0.1, verbose = F) {
 #' @author Songpeng Zu, \email{songpengzu@g.harvard.edu}
 #' @export
 
-SIMPLE <- function(dat, K0 = 10, M0 = 1, iter = 10, est_lam = 1, impt_it = 5, penl = 1,
+SIMPLE <- function(dat, K0 = 10, M0 = 1, iter = 10, est_lam = 1, impt_it = 5, penl = 1, init_imp = NULL, 
                    sigma0 = 100, pi_alpha = 1, beta = NULL, verbose = F, max_lambda = T, lambda = NULL,
                    sigma = NULL, mu = NULL, est_z = 1, clus = NULL, p_min = 0.4, cutoff = 0.1, K = 20,
-                   min_gene = 300, num_mc = 3, fix_num = F, mcmc = 50, burnin = 2) {
+                   min_gene = 2000, num_mc = 3, fix_num = F, mcmc = 50, burnin = 2) {
   # EM algorithm initiation
   G <- nrow(dat)
   n <- ncol(dat)
   z <- NULL
   Y <- dat # imputed matrix
-  pg <- matrix(p_min, G, M0)
-
+  
   pi <- rep(1 / M0, M0) # prob of z
 
   # random start
@@ -245,7 +244,23 @@ SIMPLE <- function(dat, K0 = 10, M0 = 1, iter = 10, est_lam = 1, impt_it = 5, pe
   if (is.null(beta)) {
     beta <- matrix(rnorm(G * K0), G, K0) / sqrt(K0) * sqrt(M0)
   }
+  
+  # if p_min is null, estimate dropout rate for all genes
+  if(is.null(p_min))
+  {
+     message(paste("estimate dropout rate for all genes..."))
+      if (is.null(clus)) {
+        res <- init_impute(dat, 1, rep(1, n), 0.4, cutoff = cutoff, verbose = F)
+        res[[2]] <- res[[2]] %*% t(rep(1, M0))
+      } else {
+        res <- init_impute(dat, M0, clus, 0.4, cutoff = cutoff, verbose = F)
+      }
 
+    p_min = quantile(c(res[[2]]), 0.25)
+    message(sprintf("set min dropout rate to be: %.2f", 1-p_min))
+
+  }
+  pg <- matrix(p_min, G, M0)
 
   # inital impution only for low dropout genes
   n1 <- rowMeans(dat > cutoff)
@@ -259,10 +274,7 @@ SIMPLE <- function(dat, K0 = 10, M0 = 1, iter = 10, est_lam = 1, impt_it = 5, pe
     }
   }
 
-  # low dropout
-  message(paste("inital impution for ", length(hq_ind), "high quality genes"))
-
-  # init clustering
+  # init clustering using high quality genes
   if (is.null(clus)) {
     Y2_scale <- t(scale(t(dat[hq_ind, ])))
     #s <- svd(Y2_scale)
@@ -275,8 +287,8 @@ SIMPLE <- function(dat, K0 = 10, M0 = 1, iter = 10, est_lam = 1, impt_it = 5, pe
 
   z <- matrix(0, n, M0)
   for (m in 1:M0) z[clus == m, m] <- 1
-
-
+  
+  message(paste("inital impution for ", length(hq_ind), "high quality genes"))
   if (is.null(clus)) {
     res <- init_impute(dat[hq_ind, ], 1, rep(1, n), p_min, cutoff = cutoff, verbose = F)
     res[[2]] <- res[[2]] %*% t(rep(1, M0))
@@ -285,21 +297,28 @@ SIMPLE <- function(dat, K0 = 10, M0 = 1, iter = 10, est_lam = 1, impt_it = 5, pe
   }
 
 
-  message("impute for hq genes")
   # iter, M0=1?
-  impute_hq <- EM_impute(res[[1]], dat[hq_ind, ], res[[2]], M0, K0, cutoff, 20,
-    beta[hq_ind, ], sigma[hq_ind, , drop = F], lambda, pi, z,
-    mu = NULL, celltype = clus,
-    penl, est_z, max_lambda, est_lam, impt_it, sigma0, pi_alpha, verbose = verbose,
-    num_mc = num_mc, lower = -Inf, upper = Inf
-  )
+  if(is.null(init_imp))
+  {
+    impute_hq <- EM_impute(res[[1]], dat[hq_ind, ], res[[2]], M0, K0, cutoff, 20,
+      beta[hq_ind, ], sigma[hq_ind, , drop = F], lambda, pi, z,
+      mu = NULL, celltype = clus,
+      penl, est_z, max_lambda, est_lam, impt_it, sigma0, pi_alpha, verbose = verbose,
+      num_mc = num_mc, lower = -Inf, upper = Inf
+    )
+  } else{
+     impute_hq <- EM_impute(init_imp[hq_ind, ], dat[hq_ind, ], res[[2]], M0, K0, cutoff, 20,
+      beta[hq_ind, ], sigma[hq_ind, , drop = F], lambda, pi, z,
+      mu = NULL, celltype = clus,
+      penl, est_z, max_lambda, est_lam, impt_it, sigma0, pi_alpha, verbose = verbose,
+      num_mc = num_mc, lower = -Inf, upper = Inf
+    )
+  }
   pg[hq_ind, ] <- res[[2]]
   beta[hq_ind, ] <- impute_hq$beta
   sigma[hq_ind, ] <- impute_hq$sigma
-  # check this, as imputed mu may not be zero
   mu[hq_ind, ] <- impute_hq$mu
   Y[hq_ind, ] <- impute_hq$Y
-  # gene_mean[hq_ind] = impute_hq$geneM
   z <- impute_hq$z
 
 
@@ -308,10 +327,8 @@ SIMPLE <- function(dat, K0 = 10, M0 = 1, iter = 10, est_lam = 1, impt_it = 5, pe
 
   # inital beta for other genes
   message("initial estimate beta for lq genes:")
-  # which(n1 < p_min)
   lq_ind <- setdiff(1:G, hq_ind)
-  # estimate beta and impute: only for positive part? (only impute for genes with
-  # more than 10% nonzero) M step also estimate mu sapply(lq_ind, function(g){#
+  # estimate beta and impute: only for positive part? no 
   res <- foreach(g = lq_ind, .combine = rbind) %dopar% {
     V <- 0
     for (m in 1:M0) V <- V + Vm[[m]] / sigma[g, m]
@@ -319,7 +336,12 @@ SIMPLE <- function(dat, K0 = 10, M0 = 1, iter = 10, est_lam = 1, impt_it = 5, pe
     Y_temp <- c()
 
     for (m in 1:M0) {
-      Y_temp <- c(Y_temp, dat[g, ] * sqrt(z[, m]) / sqrt(sigma[g, m]))
+      if(is.null(init_imp))
+      {
+        Y_temp <- c(Y_temp, dat[g, ] * sqrt(z[, m]) / sqrt(sigma[g, m]))
+      }else{
+        Y_temp <- c(Y_temp, init_imp[g, ] * sqrt(z[, m]) / sqrt(sigma[g, m]))
+      }
       Wb <- impute_hq$Ef[[m]] * sqrt(z[, m]) / sqrt(sigma[g, m])
       Wmu <- matrix(0, n, M0)
       # n * M
@@ -348,16 +370,18 @@ SIMPLE <- function(dat, K0 = 10, M0 = 1, iter = 10, est_lam = 1, impt_it = 5, pe
 
     coeff <- fit1m$beta[-1:-M0, 1]
     tempmu <- fit1m$beta[1:M0, 1]
+    
+    if(is.null(init_imp))
+    {
+      sg <- sapply(1:M0, function(m) {
+        (sum((init_imp[g, ] - tempmu[m] - coeff %*% t(impute_hq$Ef[[m]]))^2 * z[,m]) + sum((coeff %*% Vm[[m]]) * coeff))
+      })
 
-    # sg = sum((Y_temp - fit1m$a0 - coeff %*% t(W_temp))^2) + sum(( coeff %*%V)*
-    # coeff)* ns c(fit1m$a0, coeff, (sg+1)/(ns + 3))
-
-    sg <- sapply(1:M0, function(m) {
-      (sum((dat[g, ] - tempmu[m] - coeff %*% t(impute_hq$Ef[[m]]))^2 * z[
-        ,
-        m
-      ]) + sum((coeff %*% Vm[[m]]) * coeff))
-    })
+    }else{
+      sg <- sapply(1:M0, function(m) {
+        (sum((dat[g, ] - tempmu[m] - coeff %*% t(impute_hq$Ef[[m]]))^2 * z[,m]) + sum((coeff %*% Vm[[m]]) * coeff))
+      })
+    }
     c(fit1m$beta[, 1], rep((sum(sg) + 1) / (n + 3), M0))
   }
 
@@ -434,17 +458,17 @@ SIMPLE <- function(dat, K0 = 10, M0 = 1, iter = 10, est_lam = 1, impt_it = 5, pe
     )
 
     return(list(
-      loglik_tot = impute_result$loglik, priorB = impute_result$priorB, loglik = result2$loglik, BIC = bic, pi = impute_result$pi, mu = impute_result$mu,
+      loglik_tot = impute_result$loglik, priorB = impute_result$priorB, loglik = result2$loglik, BIC = bic, BIC0 = bic0, pi = impute_result$pi, mu = impute_result$mu,
       sigma = impute_result$sigma, beta = impute_result$beta, lambda = impute_result$lambda,
       z = impute_result$z, Yimp0 = impute, pg = pg, initclus = clus, impt = result2$impt,
-      impt_var = result2$impt_var, Ef = result2$EF, Varf = result2$varF, consensus_cluster = result2$consensus_cluster
+      impt_var = result2$impt_var, Ef = result2$EF, Varf = result2$varF, consensus_cluster = result2$consensus_cluster, p_min = p_min
     ))
   }
   return(list(
-    loglik_tot = impute_result$loglik, priorB = impute_result$priorB, loglik = NULL, BIC = bic,  pi = impute_result$pi, mu = impute_result$mu,
+    loglik_tot = impute_result$loglik, priorB = impute_result$priorB, loglik = NULL, BIC = bic, BIC0 = bic0, pi = impute_result$pi, mu = impute_result$mu,
     sigma = impute_result$sigma, beta = impute_result$beta, lambda = impute_result$lambda,
     z = impute_result$z, Yimp0 = impute, pg = pg, initclus = clus, impt = impute_result$Y,
     impt_var = NULL, Ef = impute_result$Ef,
-    Varf = impute_result$Varf, consensus_cluster = NULL
+    Varf = impute_result$Varf, consensus_cluster = NULL, p_min = p_min
   ))
 }

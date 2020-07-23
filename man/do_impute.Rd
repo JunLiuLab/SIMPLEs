@@ -4,9 +4,23 @@
 \alias{do_impute}
 \title{Sampling multiple copies of imputed values and cell factors at given parameters.}
 \usage{
-do_impute(dat, Y, beta, lambda, sigma, mu, pi, pos_mean = NULL,
-  pos_sd = NULL, celltype = NULL, mcmc = 10, burnin = 2,
-  verbose = F, pg = 0.5, cutoff = 0.1)
+do_impute(
+  dat,
+  Y,
+  beta,
+  lambda,
+  sigma,
+  mu,
+  pi,
+  pos_mean = NULL,
+  pos_sd = NULL,
+  celltype = NULL,
+  mcmc = 10,
+  burnin = 2,
+  verbose = F,
+  pg = 0.5,
+  cutoff = 0.1
+)
 }
 \arguments{
 \item{dat}{scRNASeq data matrix. Each row is a gene, each column is a cell.}

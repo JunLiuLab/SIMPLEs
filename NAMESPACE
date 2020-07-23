@@ -2,6 +2,7 @@
 
 export(SIMPLE)
 export(SIMPLE_B)
+export(selectKM)
 import(MASS)
 import(Rsolnp)
 import(doParallel)
