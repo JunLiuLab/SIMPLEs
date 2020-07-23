@@ -106,12 +106,11 @@ init_impute <- function(Y2, M0, clus, p_min = 0.6, cutoff = 0.1, verbose = F) {
 #' After Monte Carlo EM, we obtain MLE of B, \eqn{\Lambda_m}, etc. If \emph{num_mc} > 0, this function will sample multiple imputed values and cell factors at the MLEs of all the parameters by Gibbs sampling.
 #' Based on multiple imputed values, it will evaluate cluster stability for each cell (\emph{consensus_cluster}).
 #' It will also output the posterior mean and variance for the imputed values and cell factors.
-#'
+
 #' @param dat scRNASeq data matrix. Each row is a gene, each column is a cell.
 #' @param K0 Number of latent gene modules.  Default is 10. See details.
 #' @param M0 Number of clusters. Default is 1. See details.
-#' @param clus Initial clustering of scRNASeq data. If NULL, the function will
-#'   use PCA and Kmeans to do clustering initially.
+#' @param clus Initial clustering of scRNASeq data. If NULL, the function will use PCA and Kmeans to do clustering initially.
 #' @param K The number of PCs used in the initial clustering. Default is 20.
 #' @param iter The number of EM iterations using full data set. See details.
 #' @param est_z The iteration starts to update Z.
@@ -120,39 +119,19 @@ init_impute <- function(Y2, M0, clus, p_min = 0.6, cutoff = 0.1, verbose = F) {
 #' @param est_lam The iteration starts to estimate lambda.
 #' @param penl L1 penalty for the factor loadings.
 #' @param sigma0 The variance of the prior distribution of \eqn{\mu}.
-#' @param pi_alpha The hyperparameter of the prior distribution of \eqn{\pi}.
-#'   See details.
-#' @param beta A G by K0 matrix. Initial values for factor loadings (B). If
-#'   null, beta will be initialized from normal distribution with mean zero and
-#'   variance M0/K0. See details.
-#' @param lambda A M0 by K0 matrix. Initial values for the variances of factors.
-#'   Each column is for a cell cluster. If null, lambda will initialize to be
-#'   1/M0. See details.
-#' @param sigma A G by M0 matrix. Initial values for the variance of
-#'   idiosyncratic noises. Each column is for a cell cluster. If null, sigma
-#'   will initialize to be 1. See details.
-#' @param mu A G by M0 matrix. Initial values for the gene expression mean of
-#'   each cluster. Each column is for a cell cluster. If NULL, it will take the
-#'   sample mean of cells weighted by the probability in each cluster. See
-#'   details.
-#' @param p_min Initialize parameters using genes expressed in at least
-#'   \emph{p_min} proportion of cells. If the number genes selected is less than
-#'   \emph{min_gene}, select \emph{min_gene} genes with higest proportion of non
-#'   zeros. Default = 0.4. If p_min is NULL, SIMPLE will estimate the dropout rate per gene 
-#'   and set 1-p_min to be the min(75% quantile of the dropout rate, 0.6) 
-#' @param min_gene Minimal number of genes used in the initial phase. Default: 2000. See
-#'   details.
-#' @param fix_num If true, always use \emph{min_gene} number of genes with the
-#'  highest proportion of non zeros in the initial phase. Default = F. See details.
-#' @param cutoff The value below cutoff is treated as no expression. Default =
-#'   0.1.
+#' @param pi_alpha The hyperparameter of the prior distribution of \eqn{\pi}. See details.
+#' @param beta A G by K0 matrix. Initial values for factor loadings (B). If null, beta will be initialized from normal distribution with mean zero and variance M0/K0. See details.
+#' @param lambda A M0 by K0 matrix. Initial values for the variances of factors. Each column is for a cell cluster. If null, lambda will initialize to be 1/M0. See details.
+#' @param sigma A G by M0 matrix. Initial values for the variance of idiosyncratic noises. Each column is for a cell cluster. If null, sigma will initialize to be 1. See details.
+#' @param mu A G by M0 matrix. Initial values for the gene expression mean of each cluster. Each column is for a cell cluster. If NULL, it will take the sample mean of cells weighted by the probability in each cluster. See details.
+#' @param p_min Initialize parameters using genes expressed in at least \emph{p_min} proportion of cells. If the number genes selected is less than \emph{min_gene}, select \emph{min_gene} genes with higest proportion of non zeros. Default = 0.4. If p_min is NULL, SIMPLE will estimate the dropout rate per gene and set 1-p_min to be the min(75\% quantile of the dropout rate, 0.6)
+#' @param min_gene Minimal number of genes used in the initial phase. Default: 2000. See details.
+#' @param fix_num If true, always use \emph{min_gene} number of genes with the highest proportion of non zeros in the initial phase. Default = F. See details.
+#' @param cutoff The value below cutoff is treated as no expression. Default = 0.1.
 #' @param verbose Whether to show some intermediate results. Default = False.
-#' @param num_mc The number of Gibbs steps for generating new imputed data after the
-#'   parameters have been updated during Monte Carlo EM. Default = 3.
-#' @param mcmc The number of Gibbs steps to sample imputed data after EM.
-#'   Default = 50.
-#' @param burnin The number of burnin steps before sample imputed data after EM.
-#'   Default = 2.
+#' @param num_mc The number of Gibbs steps for generating new imputed data after the parameters have been updated during Monte Carlo EM. Default = 3.
+#' @param mcmc The number of Gibbs steps to sample imputed data after EM. Default = 50.
+#' @param burnin The number of burnin steps before sample imputed data after EM. Default = 2.
 #' @return \code{SIMPLE} returns a list of results in the following order.
 #'   \enumerate{
 #'     \item{loglik} {The log-likelihood of the full imputed gene expression at each iteration.}
@@ -213,6 +192,7 @@ init_impute <- function(Y2, M0, clus, p_min = 0.6, cutoff = 0.1, verbose = F) {
 #' mclust::adjustedRandIndex(apply(result$z, 1, which.max), celltype_true)
 #' # or redo clustering based on imputed values (sometimes work better for real data)
 #' getCluster(result$impt, celltype_true, Ks = 20, M0 = M0)[[1]]
+#' 
 #' @author Zhirui Hu, \email{zhiruihu@g.harvard.edu}
 #' @author Songpeng Zu, \email{songpengzu@g.harvard.edu}
 #' @export

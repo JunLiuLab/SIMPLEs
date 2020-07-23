@@ -50,60 +50,39 @@ SIMPLE(
 
 \item{sigma0}{The variance of the prior distribution of \eqn{\mu}.}
 
-\item{pi_alpha}{The hyperparameter of the prior distribution of \eqn{\pi}.
-See details.}
+\item{pi_alpha}{The hyperparameter of the prior distribution of \eqn{\pi}. See details.}
 
-\item{beta}{A G by K0 matrix. Initial values for factor loadings (B). If
-null, beta will be initialized from normal distribution with mean zero and
-variance M0/K0. See details.}
+\item{beta}{A G by K0 matrix. Initial values for factor loadings (B). If null, beta will be initialized from normal distribution with mean zero and variance M0/K0. See details.}
 
 \item{verbose}{Whether to show some intermediate results. Default = False.}
 
 \item{max_lambda}{Whether to maximize over lambda. Default is True.}
 
-\item{lambda}{A M0 by K0 matrix. Initial values for the variances of factors.
-Each column is for a cell cluster. If null, lambda will initialize to be
-1/M0. See details.}
+\item{lambda}{A M0 by K0 matrix. Initial values for the variances of factors. Each column is for a cell cluster. If null, lambda will initialize to be 1/M0. See details.}
 
-\item{sigma}{A G by M0 matrix. Initial values for the variance of
-idiosyncratic noises. Each column is for a cell cluster. If null, sigma
-will initialize to be 1. See details.}
+\item{sigma}{A G by M0 matrix. Initial values for the variance of idiosyncratic noises. Each column is for a cell cluster. If null, sigma will initialize to be 1. See details.}
 
-\item{mu}{A G by M0 matrix. Initial values for the gene expression mean of
-each cluster. Each column is for a cell cluster. If NULL, it will take the
-sample mean of cells weighted by the probability in each cluster. See
-details.}
+\item{mu}{A G by M0 matrix. Initial values for the gene expression mean of each cluster. Each column is for a cell cluster. If NULL, it will take the sample mean of cells weighted by the probability in each cluster. See details.}
 
 \item{est_z}{The iteration starts to update Z.}
 
-\item{clus}{Initial clustering of scRNASeq data. If NULL, the function will
-use PCA and Kmeans to do clustering initially.}
+\item{clus}{Initial clustering of scRNASeq data. If NULL, the function will use PCA and Kmeans to do clustering initially.}
 
-\item{p_min}{Initialize parameters using genes expressed in at least
-\emph{p_min} proportion of cells. If the number genes selected is less than
-\emph{min_gene}, select \emph{min_gene} genes with higest proportion of non
-zeros. Default = 0.4. If p_min is NULL, SIMPLE will estimate the dropout rate per gene 
-and set 1-p_min to be the min(75% quantile of the dropout rate, 0.6)}
+\item{p_min}{Initialize parameters using genes expressed in at least \emph{p_min} proportion of cells. If the number genes selected is less than \emph{min_gene}, select \emph{min_gene} genes with higest proportion of non zeros. Default = 0.4. If p_min is NULL, SIMPLE will estimate the dropout rate per gene and set 1-p_min to be the min(75\% quantile of the dropout rate, 0.6)}
 
-\item{cutoff}{The value below cutoff is treated as no expression. Default =
-0.1.}
+\item{cutoff}{The value below cutoff is treated as no expression. Default = 0.1.}
 
 \item{K}{The number of PCs used in the initial clustering. Default is 20.}
 
-\item{min_gene}{Minimal number of genes used in the initial phase. Default: 2000. See
-details.}
+\item{min_gene}{Minimal number of genes used in the initial phase. Default: 2000. See details.}
 
-\item{num_mc}{The number of Gibbs steps for generating new imputed data after the
-parameters have been updated during Monte Carlo EM. Default = 3.}
+\item{num_mc}{The number of Gibbs steps for generating new imputed data after the parameters have been updated during Monte Carlo EM. Default = 3.}
 
-\item{fix_num}{If true, always use \emph{min_gene} number of genes with the
-highest proportion of non zeros in the initial phase. Default = F. See details.}
+\item{fix_num}{If true, always use \emph{min_gene} number of genes with the highest proportion of non zeros in the initial phase. Default = F. See details.}
 
-\item{mcmc}{The number of Gibbs steps to sample imputed data after EM.
-Default = 50.}
+\item{mcmc}{The number of Gibbs steps to sample imputed data after EM. Default = 50.}
 
-\item{burnin}{The number of burnin steps before sample imputed data after EM.
-Default = 2.}
+\item{burnin}{The number of burnin steps before sample imputed data after EM. Default = 2.}
 }
 \value{
 \code{SIMPLE} returns a list of results in the following order.
@@ -197,6 +176,7 @@ celltype_true <- simu_data$Z
 mclust::adjustedRandIndex(apply(result$z, 1, which.max), celltype_true)
 # or redo clustering based on imputed values (sometimes work better for real data)
 getCluster(result$impt, celltype_true, Ks = 20, M0 = M0)[[1]]
+
 }
 \seealso{
 \code{\link{SIMPLE_B}}

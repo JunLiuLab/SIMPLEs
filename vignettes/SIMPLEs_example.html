@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>SIMPLEs example</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
+// v0.0.1
+// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
+
+document.addEventListener('DOMContentLoaded', function() {
+  const codeList = document.getElementsByClassName("sourceCode");
+  for (var i = 0; i < codeList.length; i++) {
+    var linkList = codeList[i].getElementsByTagName('a');
+    for (var j = 0; j < linkList.length; j++) {
+      if (linkList[j].innerHTML === "") {
+        linkList[j].setAttribute('aria-hidden', 'true');
+      }
+    }
+  }
+});
+</script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">SIMPLEs example</h1>
+<h4 class="author">Zhirui Hu, Songpeng Zu</h4>
+
+
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(SIMPLEs)</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">library</span>(doParallel)</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="co">#&gt; Loading required package: foreach</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="co">#&gt; Loading required package: iterators</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="co">#&gt; Loading required package: parallel</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="kw">library</span>(foreach)</span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="co"># SIMPLEs may need parallel to speed up.</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a><span class="kw">registerDoParallel</span>(<span class="dt">cores =</span> <span class="dv">8</span>)</span></code></pre></div>
+<div id="quick-start" class="section level1">
+<h1>Quick Start</h1>
+<p>If you have the single cell data, for which each row is the gene, and each column is the cell, the content is the log normalized TPM or RPKM, you can directly use <code>SIMPLEs</code> as followed:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">library</span>(SIMPLEs)</span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="co"># set cluster number, default is 1</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>M0 &lt;-<span class="st"> </span><span class="dv">1</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="co"># set latent module dimenstion, default is 10.</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a>K0 &lt;-<span class="st"> </span><span class="dv">10</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a>result &lt;-<span class="st"> </span><span class="kw">SIMPLE</span>(<span class="dt">dat =</span> data, <span class="dt">K0=</span>K0, <span class="dt">M0=</span>M0)</span>
+<span id="cb2-7"><a href="#cb2-7"></a><span class="co"># result$impt is the imputated result for the data.</span></span></code></pre></div>
+</div>
+<div id="simulation-data-study" class="section level1">
+<h1>Simulation Data Study</h1>
+<div id="data-generation" class="section level2">
+<h2>Data Generation</h2>
+<p>Here we introduce the function to simulate the single cell data and the corresponding RNASeq bulk data.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>simulation_bulk &lt;-<span class="st"> </span><span class="cf">function</span>(<span class="dt">n =</span> <span class="dv">300</span>, <span class="dt">S0 =</span> <span class="dv">10</span>, <span class="dt">K =</span> <span class="dv">3</span>, <span class="dt">MC =</span> <span class="dv">2</span>, <span class="dt">block_size =</span> <span class="dv">50</span>, <span class="dt">overlap =</span> <span class="dv">15</span>, <span class="dt">indepG =</span> <span class="dv">30</span>, <span class="dt">dropout =</span> <span class="fl">0.3</span>) {</span>
+<span id="cb3-2"><a href="#cb3-2"></a>    B =<span class="st"> </span><span class="ot">NULL</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a>    W =<span class="st"> </span><span class="ot">NULL</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a>    Lambda =<span class="st"> </span><span class="ot">NULL</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a>    <span class="co"># sample Y from Factor model, Y = BW + E, W: K*n, Y: G*n, E: G*n</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a>    Z =<span class="st"> </span><span class="kw">rmultinom</span>(n, <span class="dv">1</span>, <span class="kw">rep</span>(<span class="dv">1</span><span class="op">/</span>MC, MC))</span>
+<span id="cb3-7"><a href="#cb3-7"></a>    Z =<span class="st"> </span><span class="kw">apply</span>(Z, <span class="dv">2</span>, which.max)</span>
+<span id="cb3-8"><a href="#cb3-8"></a>    Z =<span class="st"> </span><span class="kw">sort</span>(Z)</span>
+<span id="cb3-9"><a href="#cb3-9"></a>    </span>
+<span id="cb3-10"><a href="#cb3-10"></a>    <span class="cf">if</span> (K <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>) {</span>
+<span id="cb3-11"><a href="#cb3-11"></a>        <span class="co"># generate data</span></span>
+<span id="cb3-12"><a href="#cb3-12"></a>        G =<span class="st"> </span>block_size <span class="op">+</span><span class="st"> </span>(K <span class="op">-</span><span class="st"> </span><span class="dv">1</span>) <span class="op">*</span><span class="st"> </span>(block_size <span class="op">-</span><span class="st"> </span>overlap) <span class="op">+</span><span class="st"> </span>indepG  <span class="co">#120</span></span>
+<span id="cb3-13"><a href="#cb3-13"></a>    } <span class="cf">else</span> {</span>
+<span id="cb3-14"><a href="#cb3-14"></a>        G =<span class="st"> </span>indepG</span>
+<span id="cb3-15"><a href="#cb3-15"></a>    }</span>
+<span id="cb3-16"><a href="#cb3-16"></a>    Sigma =<span class="st"> </span><span class="kw">rgamma</span>(G, <span class="dv">2</span>, <span class="dv">1</span><span class="op">/</span><span class="fl">0.3</span>)  <span class="co">#rnorm(G, 0.6, 0.1)</span></span>
+<span id="cb3-17"><a href="#cb3-17"></a>    Mu =<span class="st"> </span><span class="kw">exp</span>(<span class="kw">rnorm</span>(G, <span class="dt">mean =</span> <span class="fl">0.5</span>, <span class="dt">sd =</span> <span class="fl">0.5</span>)) <span class="op">%*%</span><span class="st"> </span><span class="kw">t</span>(<span class="kw">rep</span>(<span class="dv">1</span>, MC))</span>
+<span id="cb3-18"><a href="#cb3-18"></a>    </span>
+<span id="cb3-19"><a href="#cb3-19"></a>    act_ind =<span class="st"> </span><span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span>G, S0 <span class="op">*</span><span class="st"> </span>MC)</span>
+<span id="cb3-20"><a href="#cb3-20"></a>    label0 =<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">0</span>, G, MC)</span>
+<span id="cb3-21"><a href="#cb3-21"></a>    <span class="co"># specify mean for each cluster</span></span>
+<span id="cb3-22"><a href="#cb3-22"></a>    <span class="cf">for</span> (m <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>MC) {</span>
+<span id="cb3-23"><a href="#cb3-23"></a>        ss =<span class="st"> </span>((m <span class="op">-</span><span class="st"> </span><span class="dv">1</span>) <span class="op">*</span><span class="st"> </span>S0 <span class="op">+</span><span class="st"> </span><span class="dv">1</span>)<span class="op">:</span>(m <span class="op">*</span><span class="st"> </span>S0)</span>
+<span id="cb3-24"><a href="#cb3-24"></a>        Mu[act_ind[ss], m] =<span class="st"> </span>Mu[act_ind[ss], m] <span class="op">*</span><span class="st"> </span><span class="kw">sample</span>(<span class="kw">c</span>(<span class="fl">0.2</span>, <span class="fl">0.5</span>, <span class="fl">1.2</span>, <span class="fl">1.5</span>, <span class="dv">2</span>), S0, <span class="dt">replace =</span> T)</span>
+<span id="cb3-25"><a href="#cb3-25"></a>        label0[act_ind[ss], m] =<span class="st"> </span><span class="dv">1</span></span>
+<span id="cb3-26"><a href="#cb3-26"></a>    }</span>
+<span id="cb3-27"><a href="#cb3-27"></a>    <span class="cf">if</span> (K <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>) {</span>
+<span id="cb3-28"><a href="#cb3-28"></a>        <span class="co"># Factor Loading</span></span>
+<span id="cb3-29"><a href="#cb3-29"></a>        Gamma &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">0</span>, G, K)</span>
+<span id="cb3-30"><a href="#cb3-30"></a>        Gamma[<span class="dv">1</span><span class="op">:</span>block_size, <span class="dv">1</span>] &lt;-<span class="st"> </span><span class="dv">1</span></span>
+<span id="cb3-31"><a href="#cb3-31"></a>        <span class="cf">if</span> (K <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>) {</span>
+<span id="cb3-32"><a href="#cb3-32"></a>            <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>K) {</span>
+<span id="cb3-33"><a href="#cb3-33"></a>                Gamma[((block_size <span class="op">-</span><span class="st"> </span>overlap) <span class="op">*</span><span class="st"> </span>(i <span class="op">-</span><span class="st"> </span><span class="dv">1</span>) <span class="op">+</span><span class="st"> </span><span class="dv">1</span>)<span class="op">:</span></span>
+<span id="cb3-34"><a href="#cb3-34"></a><span class="st">                        </span>(block_size <span class="op">+</span><span class="st"> </span>(block_size <span class="op">-</span><span class="st"> </span>overlap) <span class="op">*</span><span class="st"> </span>(i <span class="op">-</span><span class="st"> </span><span class="dv">1</span>)), i] &lt;-<span class="st"> </span><span class="dv">1</span></span>
+<span id="cb3-35"><a href="#cb3-35"></a>            }</span>
+<span id="cb3-36"><a href="#cb3-36"></a>        }</span>
+<span id="cb3-37"><a href="#cb3-37"></a>        B =<span class="st"> </span>Gamma<span class="op">/</span><span class="dv">4</span>  <span class="co">#sqrt(block_size) # eigenvalue of BB^T = block_size * B^2</span></span>
+<span id="cb3-38"><a href="#cb3-38"></a>        <span class="co"># specify variance for each cluster</span></span>
+<span id="cb3-39"><a href="#cb3-39"></a>        Lambda =<span class="st"> </span><span class="kw">list</span>()</span>
+<span id="cb3-40"><a href="#cb3-40"></a>        <span class="cf">for</span> (m <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>MC) {</span>
+<span id="cb3-41"><a href="#cb3-41"></a>            Lambda[[m]] =<span class="st"> </span><span class="kw">diag</span>(<span class="dv">1</span>, K, K)</span>
+<span id="cb3-42"><a href="#cb3-42"></a>        }</span>
+<span id="cb3-43"><a href="#cb3-43"></a>        <span class="co"># matrix(rnorm(K*n), K, n) # K * n</span></span>
+<span id="cb3-44"><a href="#cb3-44"></a>        W =<span class="st"> </span><span class="kw">sapply</span>(Z, <span class="cf">function</span>(z) mixtools<span class="op">::</span><span class="kw">rmvnorm</span>(<span class="dv">1</span>, <span class="kw">rep</span>(<span class="dv">0</span>, K), Lambda[[z]]))</span>
+<span id="cb3-45"><a href="#cb3-45"></a>        E =<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">rnorm</span>(G <span class="op">*</span><span class="st"> </span>n), <span class="dt">nrow =</span> G) <span class="op">*</span><span class="st"> </span>Sigma</span>
+<span id="cb3-46"><a href="#cb3-46"></a>        Y =<span class="st"> </span>Mu[, Z] <span class="op">+</span><span class="st"> </span>B <span class="op">%*%</span><span class="st"> </span>W <span class="op">+</span><span class="st"> </span>E</span>
+<span id="cb3-47"><a href="#cb3-47"></a>    } <span class="cf">else</span> {</span>
+<span id="cb3-48"><a href="#cb3-48"></a>        Y =<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">rnorm</span>(G <span class="op">*</span><span class="st"> </span>n, Mu[, Z], Sigma), <span class="dt">nrow =</span> G)</span>
+<span id="cb3-49"><a href="#cb3-49"></a>    }</span>
+<span id="cb3-50"><a href="#cb3-50"></a>    <span class="co"># add dropout</span></span>
+<span id="cb3-51"><a href="#cb3-51"></a>    Y2 =<span class="st"> </span>Y</span>
+<span id="cb3-52"><a href="#cb3-52"></a>    dZ =<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">rbinom</span>(G <span class="op">*</span><span class="st"> </span>n, <span class="dv">1</span>, <span class="kw">exp</span>(<span class="op">-</span>dropout <span class="op">*</span><span class="st"> </span><span class="kw">rowMeans</span>(Mu)<span class="op">^</span><span class="dv">2</span>)), <span class="dt">nrow =</span> G)  <span class="co"># 0.3</span></span>
+<span id="cb3-53"><a href="#cb3-53"></a>    Y2[dZ <span class="op">==</span><span class="st"> </span><span class="dv">1</span>] =<span class="st"> </span><span class="dv">0</span></span>
+<span id="cb3-54"><a href="#cb3-54"></a>    Y2[Y2 <span class="op">&lt;</span><span class="st"> </span><span class="dv">0</span>] =<span class="st"> </span><span class="dv">0</span></span>
+<span id="cb3-55"><a href="#cb3-55"></a>    ind =<span class="st"> </span><span class="kw">which</span>(<span class="kw">rowSums</span>(Y2 <span class="op">!=</span><span class="st"> </span><span class="dv">0</span>) <span class="op">&gt;</span><span class="st"> </span><span class="dv">4</span>)</span>
+<span id="cb3-56"><a href="#cb3-56"></a>    Y2 =<span class="st"> </span>Y2[ind, ]</span>
+<span id="cb3-57"><a href="#cb3-57"></a>    Y =<span class="st"> </span>Y[ind, ]</span>
+<span id="cb3-58"><a href="#cb3-58"></a>    label0 =<span class="st"> </span>label0[ind, ]</span>
+<span id="cb3-59"><a href="#cb3-59"></a>    B =<span class="st"> </span>B[ind, ]</span>
+<span id="cb3-60"><a href="#cb3-60"></a>    Mu =<span class="st"> </span>Mu[ind, ]</span>
+<span id="cb3-61"><a href="#cb3-61"></a>    Sigma =<span class="st"> </span>Sigma[ind]</span>
+<span id="cb3-62"><a href="#cb3-62"></a>    <span class="kw">return</span>(<span class="kw">list</span>(<span class="dt">Y2 =</span> Y2, <span class="dt">Y =</span> Y, <span class="dt">B =</span> B, <span class="dt">W =</span> W, <span class="dt">Mu =</span> Mu, </span>
+<span id="cb3-63"><a href="#cb3-63"></a>                <span class="dt">Lambda =</span> Lambda, <span class="dt">Sigma =</span> Sigma, <span class="dt">Z =</span> Z, <span class="dt">bulk =</span> <span class="kw">rowMeans</span>(Mu[, Z]), <span class="dt">S_label =</span> label0))</span>
+<span id="cb3-64"><a href="#cb3-64"></a>}</span></code></pre></div>
+<p>We then use this function to simulate the input data for <code>SIMPLEs</code>, and run it. We simulate 1000 genes expressedn in 300 cells. The cells are composed of 3 clusters. In each cluster, we select 20 genes as the cluster specific genes, which are differentially # expressed in different clusters. Meanwhile, the genes have K=3 modules, each of which has block_size=100 genes with the overlap=55 genes shared by two consecutive groups given an order of the group. The drop rate is 0.3.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>n_cell &lt;-<span class="st"> </span><span class="dv">300</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a>simu_data &lt;-<span class="st"> </span><span class="kw">simulation_bulk</span>(<span class="dt">n=</span>n_cell, <span class="dt">S0=</span><span class="dv">20</span>, <span class="dt">K=</span><span class="dv">3</span>, <span class="dt">MC=</span><span class="dv">3</span>, <span class="dt">block_size=</span><span class="dv">100</span>, <span class="dt">indepG=</span><span class="dv">1000-190</span>,</span>
+<span id="cb4-3"><a href="#cb4-3"></a>                             <span class="dt">overlap=</span><span class="dv">55</span>, <span class="dt">dropout=</span><span class="fl">0.3</span>)</span>
+<span id="cb4-4"><a href="#cb4-4"></a>celltype_true =<span class="st"> </span>simu_data<span class="op">$</span>Z</span></code></pre></div>
+<p>Then run SIMPLEs with or without bulk data.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>simple_res &lt;-<span class="st"> </span><span class="kw">SIMPLE</span>(simu_data<span class="op">$</span>Y2, <span class="dt">K0=</span><span class="dv">3</span>, <span class="dt">M0=</span><span class="dv">3</span>,<span class="dt">p_min=</span><span class="fl">0.6</span>,<span class="dt">max_lambda =</span> T,<span class="dt">cutoff=</span><span class="fl">0.01</span>)</span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="co"># if we have the bulk data</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a>simpleb_res &lt;-<span class="st"> </span><span class="kw">SIMPLE_B</span>(simu_data<span class="op">$</span>Y2, <span class="dt">K0=</span><span class="dv">3</span>, <span class="dt">bulk=</span><span class="kw">data.frame</span>(simu_data<span class="op">$</span>bulk),</span>
+<span id="cb5-4"><a href="#cb5-4"></a>                        <span class="dt">celltype=</span><span class="kw">rep</span>(<span class="dv">1</span>,n_cell), <span class="dt">M0=</span><span class="dv">3</span>,<span class="dt">p_min=</span><span class="fl">0.6</span>,<span class="dt">max_lambda =</span> T,<span class="dt">cutoff=</span><span class="fl">0.01</span>)</span></code></pre></div>
+<p>We can evaluate the clustering results and get the tsne plot from the imputed data. SIMPLEs will output the clusters of cells but we can also re-do the clustering with the imputation results from SIMPLEs. Sometimes, re-do the clustering can get better result.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="co"># get the cluster infered from SIMPLEs</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a>simple_infered_cluster &lt;-<span class="st"> </span><span class="kw">apply</span>(simple_res<span class="op">$</span>z, <span class="dv">1</span>, which.max)</span>
+<span id="cb6-3"><a href="#cb6-3"></a><span class="co"># if we have use the SIMPLE_B</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a>simpleb_infered_cluster &lt;-<span class="st"> </span><span class="kw">apply</span>(simpleb_res<span class="op">$</span>z, <span class="dv">1</span>, which.max)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="co"># re-do the clustering. Only use the result from SIMPlE as an example. </span></span>
+<span id="cb7-2"><a href="#cb7-2"></a>scaled_data &lt;-<span class="st"> </span><span class="kw">t</span>(<span class="kw">scale</span>(<span class="kw">t</span>(simple_res<span class="op">$</span>impt)))</span>
+<span id="cb7-3"><a href="#cb7-3"></a>s &lt;-<span class="st"> </span><span class="kw">svd</span>(scaled_data)</span>
+<span id="cb7-4"><a href="#cb7-4"></a>km &lt;-<span class="st"> </span><span class="kw">kmeans</span>(<span class="kw">t</span>(scaled_data) <span class="op">%*%</span><span class="st"> </span>s<span class="op">$</span>u[, <span class="dv">1</span><span class="op">:</span><span class="dv">20</span>], <span class="dv">3</span>, <span class="dt">iter.max=</span><span class="dv">80</span>, <span class="dt">nstart=</span><span class="dv">300</span>)</span></code></pre></div>
+<p>Compared with the true clusters, we can compute adjusted rand index as following:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="kw">library</span>(mclust)</span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="co"># between 0 and 1; the larger, the better</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a>cluster_score &lt;-<span class="st"> </span>mclust<span class="op">::</span><span class="kw">adjustedRandIndex</span>(km<span class="op">$</span>cluster, celltype_true)</span>
+<span id="cb8-4"><a href="#cb8-4"></a>cluster_score1 &lt;-<span class="st"> </span>mclust<span class="op">::</span><span class="kw">adjustedRandIndex</span>(simple_infered_cluster, celltype_true)</span></code></pre></div>
+<p>Besides clustering, we can use tsne and ggplot to bview the imputation result.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw">library</span>(Rtsne)</span>
+<span id="cb9-2"><a href="#cb9-2"></a><span class="kw">library</span>(ggplot2)</span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="co"># for reproducible, we set the seed to tsne.</span></span>
+<span id="cb9-4"><a href="#cb9-4"></a><span class="kw">set.seed</span>(<span class="dv">0</span>)</span>
+<span id="cb9-5"><a href="#cb9-5"></a>tsne_res &lt;-<span class="st"> </span>Rtsne<span class="op">::</span><span class="kw">Rtsne</span>(<span class="kw">t</span>(simple_res<span class="op">$</span>impt), <span class="dt">pca_scale=</span>T, <span class="dt">pca_center=</span>T, <span class="dt">initial_dims=</span><span class="dv">20</span>,</span>
+<span id="cb9-6"><a href="#cb9-6"></a>                         <span class="dt">pca =</span> T)</span>
+<span id="cb9-7"><a href="#cb9-7"></a>partial_tsne &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="kw">cbind</span>(tsne_res<span class="op">$</span>Y[, <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>]), celltype_true)</span>
+<span id="cb9-8"><a href="#cb9-8"></a><span class="kw">colnames</span>(partial_tsne) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;TSNE1&quot;</span>, <span class="st">&quot;TSNE2&quot;</span>, <span class="st">&quot;Type&quot;</span>)</span>
+<span id="cb9-9"><a href="#cb9-9"></a>p &lt;-<span class="st"> </span><span class="kw">ggplot</span>(partial_tsne, <span class="kw">aes</span>(<span class="dt">x =</span> TSNE1, <span class="dt">y=</span>TSNE2, <span class="dt">color=</span>Type)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_point</span>() <span class="op">+</span><span class="st"> </span><span class="kw">theme_bw</span>()</span>
+<span id="cb9-10"><a href="#cb9-10"></a><span class="kw">plot</span>(p)</span></code></pre></div>
+</div>
+</div>
+<div id="real-data-study" class="section level1">
+<h1>Real Data Study</h1>
+<p>The single cell RNASeq and the bulk RNASeq data from the human embryonic stem cell differentiation towards definitive endoderm are used as the real data study. There are 7 cell types in this dataset. As the dataset is large, we randomly selected part of the original data, and put it in our R package under <code>data</code> directory. For details, you can use <code>?chu</code> to see the help document of the dataset.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="co"># load chu dataset</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="kw">data</span>(chu)</span></code></pre></div>
+<p>Now we can use SIMPLEs on the real data.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>ncell =<span class="st"> </span><span class="kw">ncol</span>(chu<span class="op">$</span>chu_normalized_data)</span>
+<span id="cb11-2"><a href="#cb11-2"></a>chu_simpleb_res &lt;-<span class="st"> </span><span class="kw">SIMPLE_B</span>(chu<span class="op">$</span>chu_normalized_data,</span>
+<span id="cb11-3"><a href="#cb11-3"></a>                            <span class="dt">bulk=</span><span class="kw">data.frame</span>(chu<span class="op">$</span>chu_bulk_mean), </span>
+<span id="cb11-4"><a href="#cb11-4"></a>                            <span class="dt">celltype=</span><span class="kw">rep</span>(<span class="dv">1</span>,ncell), <span class="dt">K0=</span><span class="dv">10</span>, <span class="dt">M0=</span><span class="dv">7</span>,<span class="dt">max_lambda =</span> T)</span></code></pre></div>
+<p>We can re-do the clustering using the same procedure above. We didn’t get perfect score because we only subsampled 3000 genes and H1/H9 are hard to distinguish.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>scaled_data &lt;-<span class="st"> </span><span class="kw">t</span>(<span class="kw">scale</span>(<span class="kw">t</span>(chu_simpleb_res<span class="op">$</span>impt)))</span>
+<span id="cb12-2"><a href="#cb12-2"></a>s &lt;-<span class="st"> </span><span class="kw">svd</span>(scaled_data)</span>
+<span id="cb12-3"><a href="#cb12-3"></a>km &lt;-<span class="st"> </span><span class="kw">kmeans</span>(<span class="kw">t</span>(scaled_data) <span class="op">%*%</span><span class="st"> </span>s<span class="op">$</span>u[, <span class="dv">1</span><span class="op">:</span><span class="dv">20</span>], <span class="dv">7</span>, <span class="dt">iter.max=</span><span class="dv">80</span>, <span class="dt">nstart=</span><span class="dv">300</span>)</span>
+<span id="cb12-4"><a href="#cb12-4"></a>cluster_score =<span class="st"> </span>mclust<span class="op">::</span><span class="kw">adjustedRandIndex</span>(km<span class="op">$</span>cluster, chu<span class="op">$</span>chu_cell_type)</span></code></pre></div>
+<p>We can add more dropouts given a dropout rate.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>dropP &lt;-<span class="st"> </span><span class="fl">0.3</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a>G &lt;-<span class="st"> </span><span class="kw">nrow</span>(chu<span class="op">$</span>chu_normalized_data)</span>
+<span id="cb13-3"><a href="#cb13-3"></a>n &lt;-<span class="st"> </span><span class="kw">ncol</span>(chu<span class="op">$</span>chu_normalized_data)</span>
+<span id="cb13-4"><a href="#cb13-4"></a>Z &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">rbinom</span>(G<span class="op">*</span>n, <span class="dv">1</span>, <span class="kw">exp</span>(<span class="op">-</span>dropP <span class="op">*</span><span class="st"> </span><span class="kw">rowMeans</span>(chu<span class="op">$</span>chu_normalized_data))),</span>
+<span id="cb13-5"><a href="#cb13-5"></a>            <span class="dt">nrow=</span>G)</span>
+<span id="cb13-6"><a href="#cb13-6"></a>more_dropout_data &lt;-<span class="st"> </span>chu<span class="op">$</span>chu_normalized_data</span>
+<span id="cb13-7"><a href="#cb13-7"></a>more_dropout_data[Z<span class="op">==</span><span class="dv">1</span>] &lt;-<span class="st"> </span><span class="dv">0</span></span></code></pre></div>
+<p>We can test SIMPLEs on the modified data to see its imputation result by the mean square error.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>chu_more_dropout_impute &lt;-<span class="st"> </span><span class="kw">SIMPLE_B</span>(more_dropout_data, <span class="dt">celltype=</span><span class="kw">rep</span>(<span class="dv">1</span>,ncell),</span>
+<span id="cb14-2"><a href="#cb14-2"></a>                                    <span class="dt">K0=</span><span class="dv">10</span>, <span class="dt">M0=</span><span class="dv">7</span>,<span class="dt">bulk=</span><span class="kw">data.frame</span>(chu<span class="op">$</span>chu_bulk_mean))</span>
+<span id="cb14-3"><a href="#cb14-3"></a><span class="co"># the smaller, the better                                    </span></span>
+<span id="cb14-4"><a href="#cb14-4"></a>mse &lt;-<span class="st"> </span><span class="kw">mean</span>((chu_more_dropout_impute<span class="op">$</span>impt[Z<span class="op">==</span><span class="dv">1</span>] <span class="op">-</span><span class="st"> </span>chu<span class="op">$</span>chu_normalized_data[Z<span class="op">==</span><span class="dv">1</span>])<span class="op">^</span><span class="dv">2</span>)</span>
+<span id="cb14-5"><a href="#cb14-5"></a></span>
+<span id="cb14-6"><a href="#cb14-6"></a>simpleb_infered_cluster &lt;-<span class="st"> </span><span class="kw">apply</span>(chu_more_dropout_impute<span class="op">$</span>z, <span class="dv">1</span>, which.max)</span>
+<span id="cb14-7"><a href="#cb14-7"></a>mclust<span class="op">::</span><span class="kw">adjustedRandIndex</span>(simpleb_infered_cluster, chu<span class="op">$</span>chu_cell_type)</span></code></pre></div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
