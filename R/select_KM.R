@@ -7,7 +7,7 @@
 #' @param b The scaling factor between scRNASeq and bulk RNASeq. If NULL, will do a weighted linear regression between mean of scRNASeq and bulk RNASeq for each cell type. Default = 1. Only relevant for SIMPLE-B. 
 #' @param K0 a vector for number of latent gene modules to be selected.  Default is 10. Note that the minimum K0 is 2. 
 #' @param M0 a vector for Number of clusters to be selected. Default is 1. If 1 is not in the sequence of M0, it will add 1 to the sequence; and the imputed matrix when M=1 is used to initialize imputation for other Ms. 
-#' @param rel when increasing K, the algorithm will stop when the relative decrease of BIC is less than rel; but it will enumerate all given Ms. Default: 1%.  
+#' @param rel when increasing K, the algorithm will stop when the relative decrease of BIC is less than rel; but it will enumerate all given Ms. Default: 0.01.  
 #' @param clus Initial clustering of scRNASeq data. If NULL, the function will
 #'   use PCA and Kmeans to do clustering initially.
 #' @param K The number of PCs used in the initial clustering. Default is 20.
@@ -121,8 +121,8 @@
 #' getCluster(result$impt, celltype_true, Ks = 20, M0 = M0)[[1]]
 #' @author Zhirui Hu, \email{zhiruihu@g.harvard.edu}
 #' @author Songpeng Zu, \email{songpengzu@g.harvard.edu}
-#' @export
 
+#' @export
 selectKM <- function(dat, bulk = NULL, celltype = NULL, b = 1,  K0 = 10, M0 = 1, iter = 10, est_lam = 1, impt_it = 5, penl = 1,
                    sigma0 = 100, pi_alpha = 1, beta = NULL, verbose = F, max_lambda = T, lambda = NULL,
                    sigma = NULL, mu = NULL, est_z = 1, clus = NULL, p_min = 0.4, cutoff = 0.1, K = 20,
@@ -130,7 +130,8 @@ selectKM <- function(dat, bulk = NULL, celltype = NULL, b = 1,  K0 = 10, M0 = 1,
 
 	G <- nrow(dat)
 	n <- ncol(dat)
-	mBIC = mK = mM = NULL
+	mK = mM = NULL
+  mBIC = Inf
   best = list() # for each M
   M0 = sort(M0)
   if(!(1 %in% M0)) M0 = c(1, M0)
@@ -143,39 +144,40 @@ selectKM <- function(dat, bulk = NULL, celltype = NULL, b = 1,  K0 = 10, M0 = 1,
   init_imp = NULL
   for(M1 in M0)
   {
-     prevBIC = NULL
-     print(sprintf("number of clusters:", M1))
+     prevBIC = Inf
+     print(sprintf("number of clusters: %d", M1))
      for(K1 in K0)
      {
-       print(sprintf("number of factors:", K1))
+       print(sprintf("number of factors: %d", K1))
        result = SIMPLE(dat, K1, M1, iter = iter, est_lam = est_lam, impt_it = impt_it, penl = penl, init_imp = init_imp, 
            sigma0 = sigma0, pi_alpha = pi_alpha, beta = beta, verbose = verbose, max_lambda = max_lambda, lambda = lambda,
            sigma = sigma, mu = mu, est_z = est_z, clus = clus, p_min = p_min, cutoff = cutoff, K = K,
            min_gene = min_gene, num_mc = num_mc, fix_num = fix_num, mcmc = mcmc, burnin = burnin) 
+       if(is.null(p_min)) p_min = result$p_min
+       print(sprintf("BIC: %.0f", result$BIC0))
        if(n < 1000)
        {
           if(mBIC > result$BIC0)
           {
              mBIC = result$BIC0
              mK = K1
-             mM = M1
+             mM = M1 
              best[[M1]] = result
           }
+
           BICs[as.character(M1), as.character(K1)] = result$BIC0
-          if(!is.null(prevBIC) & (result$BIC0 - prevBIC) > -abs(result$BIC0)* rel) break;
+          if((result$BIC0 - prevBIC) > -abs(result$BIC0)* rel) break;
           prevBIC = result$BIC0
         }else{
-          if(mBIC > result$BIC)
-          {
+         if(mBIC > result$BIC)
+         {
              mBIC = result$BIC
              mK = K1
              mM = M1 
              best[[M1]] = result
-
-             prevBIC = result$BIC
           }
           BICs[as.character(M1), as.character(K1)] = result$BIC
-          if(!is.null(prevBIC) & (result$BIC - prevBIC) > -abs(result$BIC)* rel) break;
+          if((result$BIC - prevBIC) > -abs(result$BIC)* rel) break;
           prevBIC = result$BIC
         }
 		}

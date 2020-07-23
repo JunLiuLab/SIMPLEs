@@ -22,7 +22,7 @@ Imports:
     doParallel (>= 1.0.15),
     foreach (>= 1.4.7),
     irlba (>= 2.3.3)
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.1
 Suggests:
     knitr,
     rmarkdown,

@@ -226,8 +226,7 @@ SIMPLE <- function(dat, K0 = 10, M0 = 1, iter = 10, est_lam = 1, impt_it = 5, pe
   n <- ncol(dat)
   z <- NULL
   Y <- dat # imputed matrix
-  pg <- matrix(p_min, G, M0)
-
+  
   pi <- rep(1 / M0, M0) # prob of z
 
   # random start
@@ -249,18 +248,19 @@ SIMPLE <- function(dat, K0 = 10, M0 = 1, iter = 10, est_lam = 1, impt_it = 5, pe
   # if p_min is null, estimate dropout rate for all genes
   if(is.null(p_min))
   {
-     message(paste("estimate dropout rate for all genes:"))
+     message(paste("estimate dropout rate for all genes..."))
       if (is.null(clus)) {
-        res <- init_impute(dat[hq_ind, ], 1, rep(1, n), 0.4, cutoff = cutoff, verbose = F)
+        res <- init_impute(dat, 1, rep(1, n), 0.4, cutoff = cutoff, verbose = F)
         res[[2]] <- res[[2]] %*% t(rep(1, M0))
       } else {
-        res <- init_impute(dat[hq_ind, ], M0, clus, 0.4, cutoff = cutoff, verbose = F)
+        res <- init_impute(dat, M0, clus, 0.4, cutoff = cutoff, verbose = F)
       }
 
     p_min = quantile(c(res[[2]]), 0.25)
     message(sprintf("set min dropout rate to be: %.2f", 1-p_min))
 
   }
+  pg <- matrix(p_min, G, M0)
 
   # inital impution only for low dropout genes
   n1 <- rowMeans(dat > cutoff)
@@ -307,7 +307,7 @@ SIMPLE <- function(dat, K0 = 10, M0 = 1, iter = 10, est_lam = 1, impt_it = 5, pe
       num_mc = num_mc, lower = -Inf, upper = Inf
     )
   } else{
-     impute_hq <- EM_impute(init_imp[hg_ind, ], dat[hq_ind, ], res[[2]], M0, K0, cutoff, 20,
+     impute_hq <- EM_impute(init_imp[hq_ind, ], dat[hq_ind, ], res[[2]], M0, K0, cutoff, 20,
       beta[hq_ind, ], sigma[hq_ind, , drop = F], lambda, pi, z,
       mu = NULL, celltype = clus,
       penl, est_z, max_lambda, est_lam, impt_it, sigma0, pi_alpha, verbose = verbose,
@@ -461,7 +461,7 @@ SIMPLE <- function(dat, K0 = 10, M0 = 1, iter = 10, est_lam = 1, impt_it = 5, pe
       loglik_tot = impute_result$loglik, priorB = impute_result$priorB, loglik = result2$loglik, BIC = bic, BIC0 = bic0, pi = impute_result$pi, mu = impute_result$mu,
       sigma = impute_result$sigma, beta = impute_result$beta, lambda = impute_result$lambda,
       z = impute_result$z, Yimp0 = impute, pg = pg, initclus = clus, impt = result2$impt,
-      impt_var = result2$impt_var, Ef = result2$EF, Varf = result2$varF, consensus_cluster = result2$consensus_cluster
+      impt_var = result2$impt_var, Ef = result2$EF, Varf = result2$varF, consensus_cluster = result2$consensus_cluster, p_min = p_min
     ))
   }
   return(list(
@@ -469,6 +469,6 @@ SIMPLE <- function(dat, K0 = 10, M0 = 1, iter = 10, est_lam = 1, impt_it = 5, pe
     sigma = impute_result$sigma, beta = impute_result$beta, lambda = impute_result$lambda,
     z = impute_result$z, Yimp0 = impute, pg = pg, initclus = clus, impt = impute_result$Y,
     impt_var = NULL, Ef = impute_result$Ef,
-    Varf = impute_result$Varf, consensus_cluster = NULL
+    Varf = impute_result$Varf, consensus_cluster = NULL, p_min = p_min
   ))
 }
