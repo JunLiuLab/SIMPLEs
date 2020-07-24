@@ -142,6 +142,7 @@ selectKM <- function(dat, bulk = NULL, celltype = NULL, b = 1,  K0 = 10, M0 = 1,
   rownames(BICs) = as.character(M0); colnames(BICs) = as.character(K0)
 
   init_imp = NULL
+  if(is.null(p_min) & !is.null(bulk)) p_min = 0.4
   for(M1 in M0)
   {
      prevBIC = Inf
@@ -149,10 +150,18 @@ selectKM <- function(dat, bulk = NULL, celltype = NULL, b = 1,  K0 = 10, M0 = 1,
      for(K1 in K0)
      {
        print(sprintf("number of factors: %d", K1))
-       result = SIMPLE(dat, K1, M1, iter = iter, est_lam = est_lam, impt_it = impt_it, penl = penl, init_imp = init_imp, 
+       if(is.null(bulk))
+       {
+         result = SIMPLE(dat, K1, M1, iter = iter, est_lam = est_lam, impt_it = impt_it, penl = penl, init_imp = init_imp, 
            sigma0 = sigma0, pi_alpha = pi_alpha, beta = beta, verbose = verbose, max_lambda = max_lambda, lambda = lambda,
            sigma = sigma, mu = mu, est_z = est_z, clus = clus, p_min = p_min, cutoff = cutoff, K = K,
            min_gene = min_gene, num_mc = num_mc, fix_num = fix_num, mcmc = mcmc, burnin = burnin) 
+       }else{
+         result = SIMPLE_B(dat, K0 = K1, bulk = bulk, celltype = celltype, M0 = M1, b = b, iter = iter, est_lam = est_lam, impt_it = impt_it, penl = penl, init_imp = init_imp, 
+           sigma0 = sigma0, pi_alpha = pi_alpha, beta = beta, verbose = verbose, max_lambda = max_lambda, lambda = lambda,
+           sigma = sigma, mu = mu, est_z = est_z, clus = clus, p_min = p_min, cutoff = cutoff, K = K,
+           min_gene = min_gene, num_mc = num_mc, fix_num = fix_num, mcmc = mcmc, burnin = burnin) 
+       }
        if(is.null(p_min)) p_min = result$p_min
        print(sprintf("BIC: %.0f", result$BIC0))
        if(n < 1000)
