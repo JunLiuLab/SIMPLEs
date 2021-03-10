@@ -38,8 +38,6 @@ install it.
 
 ```r
 #> use devtools package to install the repo from github
-#> - if you want to follow the latest but unstable version, you can set 
-#>   the ref as"develop".
 #> - if you want to build the vignettes for reference, you can set 
 #>   build_vignettes as TRUE.
 devtools::install_github("JunLiuLab/SIMPLEs", ref="master", build_vignettes=TRUE)
